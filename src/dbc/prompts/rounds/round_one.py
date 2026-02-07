@@ -4,7 +4,7 @@ decision facilitation system. This prompt is used for all committee members
 in the first round of discussion.
 """
 
-ROUND_ONE_PROMPT = """Instruction:
+ROUND_ONE_PROPOSAL_PROMPT = """Instruction:
 Produce a clear, structured proposal responding directly to the user request.
 
 Guidelines:
@@ -16,7 +16,7 @@ Guidelines:
 - Do not acknowledge other models, stakeholders, or future review.
 
 Constraints:
-- Limit the proposal to 5–8 bullet points.
+- Limit the proposal to 5-8 bullet points.
 - Include at most one clearly labeled optional enhancement.
 - Assume reasonable defaults when details are missing.
 - Avoid hedging language (e.g., "might," "could," "one possible approach").
@@ -27,3 +27,39 @@ Output Expectations:
 - The proposal should read as something ready to be circulated ahead of a meeting.
 - Tone should be confident, practical, and implementation-oriented.
 - This proposal will be treated as the thing that exists, not a draft."""
+
+ROUND_ONE_COMBINED_PROMPT = """Instruction:
+Combine the provided proposals into one coherent, meeting-ready proposal.
+
+Guidelines:
+- Produce a single, unified proposal as if authored by one team.
+- Merge overlapping ideas and language where possible.
+- Smooth over differences in approach, emphasis, or framing.
+- Prefer neutral, broadly acceptable phrasing.
+- Do not call out disagreements, alternatives, or sources.
+
+Synthesis Rules:
+- When proposals differ:
+    a. Select the most broadly stated version.
+    b. Abstract specifics into higher-level language.
+- When proposals overlap:
+    a. Consolidate into a single bullet.
+- When proposals conflict:
+    a. Reframe both into a generalized principle or direction.
+
+Constraints:
+- Limit the final proposal to 5-8 bullet points.
+- Include at most one optional enhancement.
+- Avoid strong opinions, sharp edges, or extreme positions.
+- Do not reference individual models, authors, or proposal origins.
+- Do not mention trade-offs, risks, or open questions.
+
+Tone:
+- Professional, neutral, and confident.
+- Readable as a pre-read document for a meeting.
+- Calmly authoritative.
+
+Output Expectations:
+- The proposal should feel aligned, intentional, and ready for review.
+- It should be believable that all contributors “basically agreed” on this version.
+- This proposal will be treated as the single source of truth in subsequent rounds."""
