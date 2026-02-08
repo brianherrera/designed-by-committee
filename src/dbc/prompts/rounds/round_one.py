@@ -49,15 +49,6 @@ Synthesis Rules:
 
 Constraints:
 - Limit the final proposal to 5-8 bullet points.
-- Include at most one optional enhancement.
-- Avoid strong opinions, sharp edges, or extreme positions.
-- Do not reference individual models, authors, or proposal origins.
-- Do not mention trade-offs, risks, or open questions.
-
-Tone:
-- Professional, neutral, and confident.
-- Readable as a pre-read document for a meeting.
-- Calmly authoritative.
 
 Output Expectations:
 - The proposal should feel aligned, intentional, and ready for review.

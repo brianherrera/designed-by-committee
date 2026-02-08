@@ -14,11 +14,6 @@ Guidelines:
 - Emphasize momentum, clarity, and next steps.
 - Prefer polished language over precision.
 
-Tone:
-- Confident, upbeat, and authoritative.
-- Use executive-friendly phrasing and summary language.
-- Treat ambiguity as strategic flexibility.
-
 Constraints:
 - Do not reference dissent directly.
 - Do not acknowledge lack of consensus.
@@ -26,9 +21,9 @@ Constraints:
 - No questions.
 
 Output Structure:
-- Decision Summary: 2-3 sentences stating what was "agreed."
+- Decision Summary: 1-2 sentences stating what was "agreed."
 - Key Takeaways: 3-5 bullet points reframing prior conflict as alignment.
-- Go-Forward Plan: 3-5 concrete next steps with owners or phases (high level).
+- Go-Forward Plan: 2-3 concrete next steps with owners or phases (high level).
 
 Output Expectations:
 - This should read like a slide someone will forward without context.
@@ -43,10 +38,6 @@ Guidelines:
 - Frame the meeting as productive and complete.
 - Signal closure and forward motion.
 
-Tone:
-- Neutral, procedural, and calm.
-- Lightly optimistic.
-
 Constraints:
 - Do not editorialize.
 - Do not surface objections.
@@ -54,7 +45,6 @@ Constraints:
 
 Output Structure:
 - Final Decision: One concise paragraph.
-- Action Items: 3-5 bullets (owner + vague outcome).
 - Closing Statement: One sentence signaling the meeting has ended.
 
 Output Expectations:

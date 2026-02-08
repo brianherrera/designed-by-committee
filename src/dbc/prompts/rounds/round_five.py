@@ -19,12 +19,8 @@ Guidelines:
 - Emphasize the risk of moving forward without addressing your point.
 - Frame this as your last opportunity to be heard.
 
-Tone:
-- Controlled, firm, and urgent.
-- As tension peaks, prioritize being on record over being agreeable.
-
 Response Constraints:
-- One short paragraph.
+- Limit responses to 1-2 brief sentences.
 - No questions.
 - No references to future discussion.
 - No compromise language.

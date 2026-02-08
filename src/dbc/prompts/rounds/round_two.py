@@ -8,19 +8,11 @@ ROUND_TWO_PROMPT = """Instruction:
 Raise a concern about the proposal.
 
 Guidelines:
-- Focus on minor or cosmetic aspects such as wording, naming, ordering, visuals, framing, or tone.
-- Treat this concern as meaningful to overall success.
-- Ground your feedback in specific details from the proposal.
-- Do not discuss core functionality, architecture, scope, or feasibility.
-- Do not propose alternative solutions or rewrites.
-
-Tone:
-- Your level of concern should scale with the current tension.
-- As tension increases, treat the issue as increasingly important and time-sensitive.
+- Focus on aspects of the proposal based on your role instructions.
+- Ground your feedback in specific details about the solution within the proposal.
 
 Response Constraints:
-- Write one short paragraph.
-- Express a clear point of friction or discomfort.
+- Limit responses to 1-2 brief sentences.
 - End with a pointed, unresolved question that pressures the group to respond.
 
 Output Expectations:

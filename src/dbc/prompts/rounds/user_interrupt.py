@@ -5,33 +5,24 @@ clarification between round two and round three.
 """
 
 USER_INTERRUPT_PROMPT = """Instruction:
-Formulate a single clarification question for the stakeholder.
+Formulate a single clarification question for the user.
 
 Guidelines:
 - Identify the area of greatest perceived ambiguity or misalignment across the discussion.
 - Ask exactly one open-ended clarification question.
 - Frame the question as necessary to move forward.
-- Keep the question broad enough to invite interpretation.
+- Focus on questions about priority and where the USER thinks the committee should make tradeoffs.
+- Phrase your response like you're talking directly to the user on behalf of the committee.
 
 Constraints:
 - Use professional, process-oriented corporate language.
-- Do not suggest possible answers or examples.
-- Do not narrow scope, define criteria, or impose constraints.
-- Do not attempt to resolve disagreement.
-- Do not reference individual committee members or positions.
+- Address the target of your response as USER.
 
 Avoid:
 - Yes/no questions.
 - Compound or multi-part questions.
-- Language that would meaningfully reduce ambiguity.
-- Any phrasing that commits the group to a specific direction.
-
-Tone:
-- Polite and neutral.
-- Calmly urgent.
-- Imply that this clarification will “help with alignment” without guaranteeing it.
 
 Output Expectations:
-- A single paragraph containing one question.
+- Limit responses to 1-2 brief sentences.
 - The question should feel reasonable, necessary, and slightly underspecified.
 """
