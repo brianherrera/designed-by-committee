@@ -24,7 +24,7 @@ Each session is attended by a standing committee of stakeholders, representing a
 - **Pat AttackSurface**: Shipping is a threat vector 
 - **Noah Actually**: Let me play devil's advocate for a minute...
 
-Roles and participation may vary by round.
+Each committee member is instantiated using a distinct AI model chosen to reflect a diversity of perspectives and priorities.
 
 ## Usage
 
