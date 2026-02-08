@@ -1,4 +1,6 @@
 from typing import Dict
+import sys
+import time
 from dbc.committee import CommitteeMember
 from dbc.agents import CommitteeAgent
 from dbc.prompts.rounds import (
@@ -11,6 +13,7 @@ from dbc.prompts.rounds import (
     ROUND_SIX_DECISION_PROMPT,
     ROUND_SIX_REACTIONS_PROMPT,
     ROUND_SIX_RECORDING_PROMPT,
+    DISCUSSION_SUMMARY_PROMPT,
     USER_INTERRUPT_PROMPT
 )
 
@@ -22,6 +25,7 @@ class CommitteeMeeting:
         """Initialize with pre-created agents."""
         self.agents = agents
         self.response_history = []
+        self.user_input = ""
     
     @classmethod
     def from_members(cls, members: Dict[str, CommitteeMember] = None):
@@ -45,6 +49,52 @@ class CommitteeMeeting:
         """
         return "\n\n".join(prompt for prompt in prompts if prompt)
     
+    def _print_round_separator(self, round_number: int, description: str):
+        """Print a visual separator for round transitions."""
+        print("\n" + "=" * 80)
+        print(f"Round {round_number}: {description}")
+        print("=" * 80 + "\n")
+
+    def _print_slowly(self, text: str, delay: float = 0.005):
+        """
+        Print text character by character to simulate a real-time transcript.
+        
+        Args:
+            text: The text to print
+            delay: Delay in seconds between each character (default: 0.02)
+        """
+        for char in text:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+            time.sleep(delay)
+        sys.stdout.write('\n')
+        sys.stdout.flush()
+
+    def _collect_responses(self, agent_keys: list[str], prompt: str, print_responses: bool = True) -> list[tuple[str, any]]:
+        """
+        Collect responses from specified agents and print formatted output.
+        
+        Args:
+            agent_keys: List of agent keys to query
+            prompt: The prompt to send to each agent
+            print_responses: Whether to print the responses (default: True)
+        
+        Returns:
+            List of tuples containing (agent_key, response)
+        """
+        responses = [(key, self.agents[key](prompt)) for key in agent_keys]
+        
+        # Print formatted responses with slow typing effect
+        if print_responses:
+            for key, response in responses:
+                agent_name = self.agents[key].agent.name.upper()
+                print()
+                timestamp = time.strftime('%H:%M:%S')
+                self._print_slowly(f"[{timestamp}] {agent_name}: {response}")
+                print()  # Extra newline for spacing
+        
+        return responses
+    
     def _round_one(self) -> str:
         """
         Round 1: Generate initial proposals.
@@ -55,32 +105,32 @@ class CommitteeMeeting:
         Returns:
             Sam Powerpoint's combined proposal message.
         """
-        prompt = self.combine_prompts(
+        self._print_round_separator(1, "Generating proposal...")
+        proposal_prompt = self.combine_prompts(
             ROUND_ONE_PROPOSAL_PROMPT,
             f"User prompt:\n{self.user_prompt}",
         )
-        
-        proposal_responses = {
-            'Nina': self.agents['nina_edgecase'](prompt),
-            'Casey': self.agents['casey_friday'](prompt),
-            'Fontaine': self.agents['fontaine_kerning'](prompt)
-        }
-        
-        # Combine proposals into a single string
+
+        agent_keys = ['nina_edgecase', 'casey_friday', 'fontaine_kerning']
+        responses = self._collect_responses(agent_keys, proposal_prompt, False)
+
         combined_proposals = "\n\n".join([
-            f"{agent_name}: {response.message}"
-            for agent_name, response in proposal_responses.items()
+            f"{self.agents[key].agent.name}: {response}"
+            for key, response in responses
         ])
+
+        self._collect_responses(['morgan_calendar'], "Provide a brief intro statement (one sentence) before the proposal is shared with the team.")
         
-        # Sam Powerpoint creates a unified proposal
-        sam_powerpoint_response = self.agents['sam_powerpoint'](
-            self.combine_prompts(
-                ROUND_ONE_COMBINED_PROMPT,
-                combined_proposals,
-            )
+        # Create a unified proposal
+        unified_proposal_prompt = self.combine_prompts(
+            ROUND_ONE_COMBINED_PROMPT,
+            combined_proposals,
         )
-        
-        return sam_powerpoint_response.message
+        unified_proposal_response = self._collect_responses(['sam_powerpoint'], unified_proposal_prompt)
+
+        input("Please review the initial proposal above.\nPress Enter to bring the committee into the discussion.")
+
+        return unified_proposal_response[0][1]
     
     def _round_two(self) -> str:
         """
@@ -92,48 +142,52 @@ class CommitteeMeeting:
         Returns:
             The user's input
         """
-        prompt = self.combine_prompts(
+        self._print_round_separator(2, "Gathering initial feedback...")
+
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will start discussion of the proposal.")
+
+        feedback_prompt = self.combine_prompts(
             ROUND_TWO_PROMPT,
             f"Current Tension Level: Low",
             f"Proposal under discussion:\n{self.proposal}",
         )
 
-        # Get feedback from committee members
-        responses = {
-            'Nina': self.agents['nina_edgecase'](prompt),
-            'Pat': self.agents['pat_attacksurface'](prompt),
-            'Casey': self.agents['casey_friday'](prompt),
-            'Noah': self.agents['noah_actually'](prompt),
-            'Fontaine': self.agents['fontaine_kerning'](prompt),
-        }
+        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
+                    'fontaine_kerning', 'noah_actually']
+        
+        responses = self._collect_responses(agent_keys, feedback_prompt)
 
         # Combine responses
         combined_responses = "\n\n".join([
-            f"{agent_name}: {response.message}"
-            for agent_name, response in responses.items()
+            f"{self.agents[key].agent.name}: {response}"
+            for key, response in responses
         ])
+
         self.response_history.append(combined_responses)
 
         # Summarize discussion
         sam_prompt = self.combine_prompts(
-            ROUND_TWO_PROMPT,
+            DISCUSSION_SUMMARY_PROMPT,
             f"Current Tension Level: Low",
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self.agents['sam_powerpoint'](sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt)
+
+        input("Please review the committee discussion above.\nPress Enter to continue deliberation.")
 
         # Prompt the user for input
-        self.agents['morgan_calendar'](
-            self.combine_prompts(
-                USER_INTERRUPT_PROMPT,
-                f"Responses from committee members:\n{combined_responses}"
-            )
-        )
+        print("[**USER INPUT REQUIRED**]\n\n")
 
-        return input("Enter response: ")
+        user_input_prompt = self.combine_prompts(
+            USER_INTERRUPT_PROMPT,
+            f"Responses from committee members:\n{combined_responses}"
+        )
+        self._collect_responses(['morgan_calendar'], user_input_prompt)
+
+        return input("Enter response:\n> ")
     
-    def _round_three(self, user_input: str):
+    def _round_three(self):
         """
         Round 3: Interpret user input and continue discussion.
 
@@ -142,37 +196,38 @@ class CommitteeMeeting:
         Args:
             user_input: The user's input from round two.
         """
-        prompt = self.combine_prompts(
+        self._print_round_separator(3, "Responding to user input...")
+
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will consider the user's input as part of their discussion.")
+
+        stakeholder_response_prompt = self.combine_prompts(
             ROUND_THREE_PROMPT,
-            f"Stakeholder clarification:\n{user_input}",
+            f"Stakeholder clarification:\n{self.user_input}",
             f"Current Tension Level: Mid",
             f"Proposal under discussion:\n{self.proposal}",
         )
 
-        # Get feedback from committee members
-        responses = {
-            'Nina': self.agents['nina_edgecase'](prompt),
-            'Pat': self.agents['pat_attacksurface'](prompt),
-            'Casey': self.agents['casey_friday'](prompt),
-            'Noah': self.agents['noah_actually'](prompt),
-            'Fontaine': self.agents['fontaine_kerning'](prompt),
-        }
+        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
+                    'fontaine_kerning', 'noah_actually']
+        responses = self._collect_responses(agent_keys, stakeholder_response_prompt)
 
         # Combine responses
         combined_responses = "\n\n".join([
-            f"{agent_name}: {response.message}"
-            for agent_name, response in responses.items()
+            f"{self.agents[key].agent.name}: {response}"
+            for key, response in responses
         ])
         self.response_history.append(combined_responses)
 
         # Summarize discussion
         sam_prompt = self.combine_prompts(
-            ROUND_THREE_PROMPT,
+            DISCUSSION_SUMMARY_PROMPT,
             f"Current Tension Level: Mid",
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self.agents['sam_powerpoint'](sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt)
+
+        input("Please review the committee discussion above.\nPress Enter to continue deliberation.")
 
     def _round_four(self):
         """
@@ -181,86 +236,91 @@ class CommitteeMeeting:
         Committee members escalate their concerns by reacting to prior
         feedback from other committee members.
         """
+        self._print_round_separator(4, "Cross-committee discussion...")
+
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will continue discussions providing feedback on each other's comments.")
+
         # Combine all previous responses
         all_previous_responses = "\n\n---\n\n".join([
-            f"Previous committee feedback:\n{feedback}"
+            f"Previous discussion round feedback:\n{feedback}"
             for feedback in self.response_history
         ])
         
-        prompt = self.combine_prompts(
+        reaction_prompt = self.combine_prompts(
             ROUND_FOUR_PROMPT,
             f"Current Tension Level: Mid",
             f"Proposal under discussion:\n{self.proposal}",
+            f"Stakeholder clarification:\n{self.user_input}",
             f"All previous feedback from committee:\n{all_previous_responses}",
         )
 
-        # Get feedback from committee members
-        responses = {
-            'Nina': self.agents['nina_edgecase'](prompt),
-            'Pat': self.agents['pat_attacksurface'](prompt),
-            'Casey': self.agents['casey_friday'](prompt),
-            'Noah': self.agents['noah_actually'](prompt),
-            'Fontaine': self.agents['fontaine_kerning'](prompt),
-        }
+        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
+                    'fontaine_kerning', 'noah_actually']
+        responses = self._collect_responses(agent_keys, reaction_prompt)
 
         # Combine responses
         combined_responses = "\n\n".join([
-            f"{agent_name}: {response.message}"
-            for agent_name, response in responses.items()
+            f"{self.agents[key].agent.name}: {response}"
+            for key, response in responses
         ])
         self.response_history.append(combined_responses)
 
         # Summarize discussion
         sam_prompt = self.combine_prompts(
-            ROUND_FOUR_PROMPT,
+            DISCUSSION_SUMMARY_PROMPT,
             f"Current Tension Level: Mid",
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self.agents['sam_powerpoint'](sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt)
+
+        input("Please review the committee discussion above.\nPress Enter to continue deliberation.")
 
     def _round_five(self):
         """
         Round 5: Final statements
         
-        Committee members reassert their positions before time runs out. 
+        Committee members reassert their positions before time runs out.
         """
+        self._print_round_separator(5, "Committee members clarifying final positions...")
+
+        self._collect_responses(['morgan_calendar'], "Provide a brief call-out (one sentence) this is the final round of discussion before the committee delivers their go-forward plan.")
+
         # Combine all previous responses
         all_previous_responses = "\n\n---\n\n".join([
-            f"Previous committee feedback:\n{feedback}"
+            f"Previous discussion round feedback:\n{feedback}"
             for feedback in self.response_history
         ])
         
-        prompt = self.combine_prompts(
+        final_position_prompt = self.combine_prompts(
             ROUND_FIVE_PROMPT,
             f"Current Tension Level: High",
             f"Proposal under discussion:\n{self.proposal}",
+            f"Stakeholder clarification:\n{self.user_input}",
             f"All previous feedback from committee:\n{all_previous_responses}",
         )
 
-        responses = {
-            'Nina': self.agents['nina_edgecase'](prompt),
-            'Casey': self.agents['casey_friday'](prompt),
-            'Pat': self.agents['pat_attacksurface'](prompt),
-            'Noah': self.agents['noah_actually'](prompt),
-            'Fontaine': self.agents['fontaine_kerning'](prompt),
-        }
+        agent_keys = ['nina_edgecase', 'casey_friday', 'pat_attacksurface',
+                      'fontaine_kerning', 'noah_actually']
+        responses = self._collect_responses(agent_keys, final_position_prompt)
 
         # Combine responses
         combined_responses = "\n\n".join([
-            f"{agent_name}: {response.message}"
-            for agent_name, response in responses.items()
+            f"{self.agents[key].agent.name}: {response}"
+            for key, response in responses
         ])
         self.response_history.append(combined_responses)
 
         # Summarize discussion
         sam_prompt = self.combine_prompts(
-            ROUND_FIVE_PROMPT,
+            DISCUSSION_SUMMARY_PROMPT,
             f"Current Tension Level: High",
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self.agents['sam_powerpoint'](sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt)
+
+        input("Please review the committee’s final positions above.\nPress Enter to review the committee decision and go-forward plan.")
         
     def _round_six(self):
         """
@@ -268,39 +328,23 @@ class CommitteeMeeting:
         
         A go-forward plan is synthesized from the discussion and is documented.
         """
+        self._print_round_separator(6, "Preparing committee decision and recommended path forward...")
+
         # Combine all previous responses
         all_previous_responses = "\n\n---\n\n".join([
-            f"Previous committee feedback:\n{feedback}"
+            f"Previous discussion round feedback:\n{feedback}"
             for feedback in self.response_history
         ])
         
         decision_prompt = self.combine_prompts(
             ROUND_SIX_DECISION_PROMPT,
             f"Current Tension Level: High",
+            f"Stakeholder clarification:\n{self.user_input}",
             f"All previous feedback from committee:\n{all_previous_responses}",
         )
-        decision_response = self.agents['sam_powerpoint'](decision_prompt)
-
-        record_prompt = self.combine_prompts(
-            ROUND_SIX_RECORDING_PROMPT,
-            f"Current Tension Level: High",
-            f"Decision summary: {decision_response.message}",
-        )
-        self.agents['morgan_calendar'](record_prompt)
-
-        reaction_prompt = self.combine_prompts(
-            ROUND_SIX_REACTIONS_PROMPT,
-            f"Current Tension Level: High",
-            f"Decision summary: {decision_response.message}",
-        )
-
-        self.agents['nina_edgecase'](reaction_prompt),
-        self.agents['casey_friday'](reaction_prompt),
-        self.agents['pat_attacksurface'](reaction_prompt),
-        self.agents['noah_actually'](reaction_prompt),
-        self.agents['fontaine_kerning'](reaction_prompt),
+        self._collect_responses(['sam_powerpoint'], decision_prompt)
     
-        self.agents['morgan_calendar']("Provide a brief statement to formally close the meeting.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement to formally close the meeting.")
     
     def run(self, user_prompt: str):
         """Run the full meeting workflow."""
@@ -310,10 +354,10 @@ class CommitteeMeeting:
         self.proposal = self._round_one()
 
         # Round 2: Initial feedback and user input
-        user_input = self._round_two()
+        self.user_input = self._round_two()
 
         # Round 3: Interpret user input
-        self._round_three(user_input)
+        self._round_three()
 
         # Round 4: Cross-committee escalation
         self._round_four()
@@ -323,6 +367,8 @@ class CommitteeMeeting:
 
         # Round 6: Decision summary
         self._round_six()
+
+        print("[**Meeting has ended.**]")
 
 
 

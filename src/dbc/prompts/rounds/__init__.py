@@ -11,4 +11,5 @@ from .round_six import (
     ROUND_SIX_REACTIONS_PROMPT,
     ROUND_SIX_RECORDING_PROMPT,
 )
+from .discussion_summary import DISCUSSION_SUMMARY_PROMPT
 from .user_interrupt import USER_INTERRUPT_PROMPT
