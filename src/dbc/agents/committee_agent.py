@@ -12,21 +12,28 @@ class CommitteeAgent:
     def from_member(cls, member: CommitteeMember) -> 'CommitteeAgent':
         """Create a CommitteeAgent from a CommitteeMember definition."""
         # Import system prompt dynamically
-        system_prompt_module = __import__(member.system_prompt_module, fromlist=['SYSTEM_PROMPT'])
-        system_prompt = system_prompt_module.SYSTEM_PROMPT
+        prompt_module = __import__(member.prompt_module, fromlist=['SYSTEM_PROMPT'])
+        system_prompt = prompt_module.SYSTEM_PROMPT
         
         # Create Bedrock model
         model = BedrockModel(model_id=member.model_id)
         
         # Create Strands Agent
         agent = Agent(
-            system_prompt=system_prompt,
+            callback_handler=None, # Suppress output for formatting control
             model=model,
-            name=member.display_name
+            name=member.display_name,
+            system_prompt=system_prompt,
         )
 
         return cls(agent=agent, member=member)
     
     def __call__(self, prompt: str, **kwargs):
-        """Make the agent directly callable."""
-        return self.agent(prompt, **kwargs)
+        """Make the agent directly callable, returning text content."""
+        response = self.agent(prompt, **kwargs)
+        # Extract text content from response
+        if hasattr(response, 'message') and isinstance(response.message, dict):
+            if 'content' in response.message and len(response.message['content']) > 0:
+                return response.message['content'][0]['text']
+        return response
+
