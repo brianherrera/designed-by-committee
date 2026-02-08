@@ -1,0 +1,19 @@
+[project]
+name = "designed-by-committee"
+version = "0.1.0"
+description = "Multi-agent committee decision facilitation system"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "strands-agents>=1.25.0",
+]
+
+[project.scripts]
+dbc = "dbc.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
