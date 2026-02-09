@@ -34,7 +34,7 @@ Designed by Committee is a command-line tool powered by [Strands Agents](https:/
 dbc kickoff "Design a landing page for a productivity app"
 ```
 
-The tool assumes AWS credentials and Bedrock access are already configured.
+Before running your first meeting, complete the [Setup Guide](SETUP.md) to configure AWS permissions and credentials.
 
 ## Notes
 
