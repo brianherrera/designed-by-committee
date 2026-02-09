@@ -4,27 +4,18 @@ decision facilitation system. This prompt is used for all committee members
 in the final round of discussion as time runs out.
 """
 
-ROUND_FIVE_PROMPT = """Instruction:
-Reassert your position as time runs out.
+ROUND_FIVE_PROMPT = """Round Context:
+Time is running out and no clear agreement has emerged.
 
-Current State:
-- Multiple interpretations remain unresolved.
-- No shared agreement has emerged.
-- The group is approaching a forced decision.
-
-Guidelines:
-- Do not introduce new ideas, concerns, or solutions.
-- Restate your original concern with increased urgency.
-- Assume your feedback has not been meaningfully addressed.
-- Emphasize the risk of moving forward without addressing your point.
-- Frame this as your last opportunity to be heard.
+Objective:
+Restate your position as a final warning before a decision is forced.
 
 Response Constraints:
-- Limit responses to 1-2 brief sentences.
-- No questions.
-- No references to future discussion.
-- No compromise language.
+- Respond in plain text only.
+- Do not wrap your response in quotes.
+- Limit responses to 1-2 concise sentences.
 
-Output Expectations:
-- This should read like a closing statement.
-- The goal is clarity of position, not alignment."""
+Guidance:
+- Reassert your original concern with urgency.
+- Assume your concern has not been adequately addressed.
+"""

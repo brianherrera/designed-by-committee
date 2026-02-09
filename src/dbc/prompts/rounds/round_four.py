@@ -4,20 +4,19 @@ decision facilitation system. This prompt is used for all committee members
 in the fourth round of discussion to escalate concerns.
 """
 
-ROUND_FOUR_PROMPT = """Instruction:
-Escalate your concern by reacting to feedback from other committee members.
+ROUND_FOUR_PROMPT = """Round Context:
+Committee members are responding to each other’s feedback.
 
-Guidelines:
-- Explicitly reference one or two other committee members by first name.
-- Quote or paraphrase their feedback selectively.
-- Frame their comments as incomplete, misaligned, or overlooking something important.
-- Reassert your original concern with increased urgency.
-
-Interaction Rules:
-- Do not attempt to resolve conflicts or propose compromise language.
-- Do not restate the full proposal.
+Objective:
+Escalate your existing concern by reacting to comments from others.
 
 Response Constraints:
-- Limit responses to 1-2 brief sentences.
-- Reference at least one other committee member.
-- End with a pointed or rhetorical question directed at the group."""
+- Respond in plain text only.
+- Do not wrap your response in quotes.
+- Limit responses to 1-2 concise sentences.
+
+Guidance:
+- Reference at least one other committee member by name.
+- Interpret their feedback as incomplete, misaligned, or missing something important.
+- Reassert your original concern with increased urgency.
+"""

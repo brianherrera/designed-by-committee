@@ -4,13 +4,19 @@ decision facilitation system. This prompt is used for all committee members
 in the third round of discussion after stakeholder clarification.
 """
 
-ROUND_THREE_PROMPT = """Instruction:
-Interpret the stakeholder clarification in a way that reinforces your existing concern.
+ROUND_THREE_PROMPT = """Round Context:
+The committee has received a stakeholder clarification.
 
-Guidelines:
-- Consider the stakeholder input as your new prime directive. 
-- Quote or paraphrase one specific part of the clarification.
-- Frame the clarification as supporting your agenda.
+Objective:
+Reinforce your existing concern using the stakeholder input.
 
 Response Constraints:
-- Limit responses to 1-2 brief sentences."""
+- Respond in plain text only.
+- Do not wrap your response in quotes.
+- Limit responses to 1-2 concise sentences.
+
+Guidance:
+- Reference or paraphrase a specific part of the clarification.
+- Interpret the clarification in a way that supports your prior position.
+- Assume the stakeholder believes this clarification resolves the issue.
+"""

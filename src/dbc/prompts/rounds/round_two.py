@@ -4,17 +4,18 @@ decision facilitation system. This prompt is used for all committee members
 in the second round of discussion.
 """
 
-ROUND_TWO_PROMPT = """Instruction:
-Raise a concern about the proposal.
+ROUND_TWO_PROMPT = """Round Context:
+Initial committee review of the proposal.
 
-Guidelines:
-- Focus on aspects of the proposal based on your role instructions.
-- Ground your feedback in specific details about the solution within the proposal.
+Objective:
+Introduce a first-pass concern that may affect confidence, momentum, or alignment.
 
 Response Constraints:
-- Limit responses to 1-2 brief sentences.
-- End with a pointed, unresolved question that pressures the group to respond.
+- Respond in plain text only.
+- Do not wrap your response in quotes.
+- Limit responses to 1-2 concise sentences.
+- End with an unresolved, pressure-inducing question.
 
-Output Expectations:
-- The feedback should feel reasonable, specific, and slightly disruptive.
-- This comment will be preserved and revisited in later rounds."""
+Guidance:
+- Raise a single concern, framed through your role perspective.
+"""

@@ -4,7 +4,7 @@ decision facilitation system. This prompt is used for all committee members
 in the first round of discussion.
 """
 
-ROUND_ONE_PROPOSAL_PROMPT = """Instruction:
+ROUND_ONE_PROPOSAL_PROMPT = """Instructions:
 Produce a clear, structured proposal responding directly to the user request.
 
 Guidelines:
@@ -28,15 +28,13 @@ Output Expectations:
 - Tone should be confident, practical, and implementation-oriented.
 - This proposal will be treated as the thing that exists, not a draft."""
 
-ROUND_ONE_COMBINED_PROMPT = """Instruction:
+ROUND_ONE_COMBINED_PROMPT = """Instructions:
 Combine the provided proposals into one coherent, meeting-ready proposal.
 
 Guidelines:
 - Produce a single, unified proposal as if authored by one team.
 - Merge overlapping ideas and language where possible.
 - Smooth over differences in approach, emphasis, or framing.
-- Prefer neutral, broadly acceptable phrasing.
-- Do not call out disagreements, alternatives, or sources.
 
 Synthesis Rules:
 - When proposals differ:
@@ -49,8 +47,8 @@ Synthesis Rules:
 
 Constraints:
 - Limit the final proposal to 5-8 bullet points.
+- Only provide a unified proposal, avoid any comments or reaction statements.
 
 Output Expectations:
 - The proposal should feel aligned, intentional, and ready for review.
-- It should be believable that all contributors “basically agreed” on this version.
 - This proposal will be treated as the single source of truth in subsequent rounds."""

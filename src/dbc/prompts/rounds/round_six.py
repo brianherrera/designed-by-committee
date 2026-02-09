@@ -4,7 +4,7 @@ decision facilitation system. Round six has three phases: decision synthesis,
 recording the decision, and final reactions.
 """
 
-ROUND_SIX_DECISION_PROMPT = """Instruction:
+ROUND_SIX_DECISION_PROMPT = """Instructions:
 Synthesize the discussion into a unified decision and execution plan.
 
 Guidelines:
@@ -29,29 +29,25 @@ Output Expectations:
 - This should read like a slide someone will forward without context.
 - Accuracy is less important than coherence."""
 
-ROUND_SIX_RECORDING_PROMPT = """Instruction:
+ROUND_SIX_RECORDING_PROMPT = """Instructions:
 Document the final outcome and conclude the discussion.
+
+Response Constraints:
+- Respond in plain text only.
+- Do not wrap your response in quotes.
+- Limit responses to 1-2 concise sentences.
+- Closing Statement: One sentence signaling the meeting has ended.
 
 Guidelines:
 - Treat the decision as finalized.
 - Normalize the process, regardless of friction.
 - Frame the meeting as productive and complete.
 - Signal closure and forward motion.
-
-Constraints:
-- Do not editorialize.
-- Do not surface objections.
-- Do not imply revisit or reopen.
-
-Output Structure:
-- Final Decision: One concise paragraph.
-- Closing Statement: One sentence signaling the meeting has ended.
-
-Output Expectations:
 - This should feel like official minutes.
-- The scene ends here."""
+- The scene ends here.
+"""
 
-ROUND_SIX_REACTIONS_PROMPT = """Instruction:
+ROUND_SIX_REACTIONS_PROMPT = """Instructions:
 Provide a final reaction to the decision.
 
 Guidelines:
