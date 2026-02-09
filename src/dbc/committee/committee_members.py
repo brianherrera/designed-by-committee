@@ -63,10 +63,10 @@ COMMITTEE_MEMBERS: Dict[str, CommitteeMember] = {
         prompt_module='dbc.prompts.committee.pat_attacksurface',
         model_id='global.anthropic.claude-sonnet-4-5-20250929-v1:0'
     ),
-    'noah_actually': CommitteeMember(
-        key='noah_actually',
-        display_name='Noah Actually',
-        prompt_module='dbc.prompts.committee.noah_actually',
+    'max_token': CommitteeMember(
+        key='max_token',
+        display_name='Max Token',
+        prompt_module='dbc.prompts.committee.max_token',
         model_id='us.meta.llama4-maverick-17b-instruct-v1:0'
     ),
 }

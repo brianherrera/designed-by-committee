@@ -22,7 +22,7 @@ Each session is attended by a standing committee of stakeholders, representing a
 - **Sam PowerPoint**: Executive Summary: Repeating what you just said
 - **Fontaine Kerning**: Can I get the icon in cornflower blue?
 - **Pat AttackSurface**: Shipping is a threat vector 
-- **Noah Actually**: Let me play devil's advocate for a minute...
+- **Max Token**: This should be an agentic workflow
 
 Each committee member is instantiated using a distinct AI model chosen to reflect a diversity of perspectives and priorities.
 

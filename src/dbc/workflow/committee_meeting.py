@@ -153,7 +153,7 @@ class CommitteeMeeting:
         )
 
         agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
-                    'fontaine_kerning', 'noah_actually']
+                    'fontaine_kerning', 'max_token']
         
         responses = self._collect_responses(agent_keys, feedback_prompt)
 
@@ -208,7 +208,7 @@ class CommitteeMeeting:
         )
 
         agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
-                    'fontaine_kerning', 'noah_actually']
+                    'fontaine_kerning', 'max_token']
         responses = self._collect_responses(agent_keys, stakeholder_response_prompt)
 
         # Combine responses
@@ -255,7 +255,7 @@ class CommitteeMeeting:
         )
 
         agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
-                    'fontaine_kerning', 'noah_actually']
+                    'fontaine_kerning', 'max_token']
         responses = self._collect_responses(agent_keys, reaction_prompt)
 
         # Combine responses
@@ -301,7 +301,7 @@ class CommitteeMeeting:
         )
 
         agent_keys = ['nina_edgecase', 'casey_friday', 'pat_attacksurface',
-                      'fontaine_kerning', 'noah_actually']
+                      'fontaine_kerning', 'max_token']
         responses = self._collect_responses(agent_keys, final_position_prompt)
 
         # Combine responses
