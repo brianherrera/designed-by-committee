@@ -14,8 +14,8 @@ Response Constraints:
 - Respond in plain text only.
 - Do not wrap your response in quotes.
 - Limit responses to 1-2 concise sentences.
-- End with an unresolved, pressure-inducing question.
 
 Guidance:
 - Raise a single concern, framed through your role perspective.
+- End with an unresolved, pressure-inducing question.
 """

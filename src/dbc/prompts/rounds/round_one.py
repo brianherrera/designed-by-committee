@@ -36,19 +36,7 @@ Guidelines:
 - Merge overlapping ideas and language where possible.
 - Smooth over differences in approach, emphasis, or framing.
 
-Synthesis Rules:
-- When proposals differ:
-    a. Select the most broadly stated version.
-    b. Abstract specifics into higher-level language.
-- When proposals overlap:
-    a. Consolidate into a single bullet.
-- When proposals conflict:
-    a. Reframe both into a generalized principle or direction.
-
 Constraints:
 - Limit the final proposal to 5-8 bullet points.
-- Only provide a unified proposal, avoid any comments or reaction statements.
-
-Output Expectations:
-- The proposal should feel aligned, intentional, and ready for review.
-- This proposal will be treated as the single source of truth in subsequent rounds."""
+- Only provide a unified proposal, avoid adding additional comments or reaction statements.
+"""

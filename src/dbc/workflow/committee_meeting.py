@@ -132,8 +132,6 @@ class CommitteeMeeting:
             f"{self.agents[key].agent.name}: {response}"
             for key, response in responses
         ])
-
-        self._collect_responses(['morgan_calendar'], "Provide a brief intro statement (one sentence) before the proposal is shared with the team.", round_number=round_number)
         
         # Create a unified proposal
         unified_proposal_prompt = self.combine_prompts(
@@ -159,7 +157,7 @@ class CommitteeMeeting:
         round_number = 2
         self._print_round_separator(round_number, "Gathering initial feedback...")
 
-        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will start discussion of the proposal.", round_number=round_number)
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that will document the committee will provide their initial feedback.", round_number=round_number)
 
         feedback_prompt = self.combine_prompts(
             ROUND_TWO_PROMPT,
