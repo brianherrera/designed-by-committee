@@ -70,27 +70,40 @@ class CommitteeMeeting:
         sys.stdout.write('\n')
         sys.stdout.flush()
 
-    def _collect_responses(self, agent_keys: list[str], prompt: str, print_responses: bool = True) -> list[tuple[str, any]]:
+    def _collect_responses(self, agent_keys: list[str], prompt: str, round_number: int, print_responses: bool = True) -> list[tuple[str, any]]:
         """
         Collect responses from specified agents and print formatted output.
         
         Args:
             agent_keys: List of agent keys to query
             prompt: The prompt to send to each agent
+            round_number: Round number to apply round-specific prompts
             print_responses: Whether to print the responses (default: True)
         
         Returns:
             List of tuples containing (agent_key, response)
         """
-        responses = [(key, self.agents[key](prompt)) for key in agent_keys]
+        responses = []
         
-        # Print formatted responses with slow typing effect
-        if print_responses:
-            for key, response in responses:
+        for key in agent_keys:
+            committee_agent = self.agents[key]
+            
+            # Combine base prompt with round-specific prompt if available
+            full_prompt = prompt
+            round_prompt = committee_agent.round_prompts.get(round_number) if committee_agent.round_prompts else None
+            if round_prompt:
+                full_prompt = self.combine_prompts(round_prompt, prompt)
+            
+            response = committee_agent(full_prompt)
+            responses.append((key, response))
+            
+            # Print formatted response with typing effect
+            if print_responses:
                 agent_name = self.agents[key].agent.name.upper()
+                agent_title = self.agents[key].member.title
                 print()
                 timestamp = time.strftime('%H:%M:%S')
-                self._print_slowly(f"[{timestamp}] {agent_name}: {response}")
+                self._print_slowly(f"[{timestamp}] {agent_name} ({agent_title}): {response}")
                 print()  # Extra newline for spacing
         
         return responses
@@ -105,28 +118,29 @@ class CommitteeMeeting:
         Returns:
             Sam Powerpoint's combined proposal message.
         """
-        self._print_round_separator(1, "Generating proposal...")
+        round_number = 1
+        self._print_round_separator(round_number, "Generating proposal...")
         proposal_prompt = self.combine_prompts(
             ROUND_ONE_PROPOSAL_PROMPT,
             f"User prompt:\n{self.user_prompt}",
         )
 
         agent_keys = ['nina_edgecase', 'casey_friday', 'fontaine_kerning']
-        responses = self._collect_responses(agent_keys, proposal_prompt, False)
+        responses = self._collect_responses(agent_keys, proposal_prompt, round_number=round_number, print_responses=False)
 
         combined_proposals = "\n\n".join([
             f"{self.agents[key].agent.name}: {response}"
             for key, response in responses
         ])
 
-        self._collect_responses(['morgan_calendar'], "Provide a brief intro statement (one sentence) before the proposal is shared with the team.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief intro statement (one sentence) before the proposal is shared with the team.", round_number=round_number)
         
         # Create a unified proposal
         unified_proposal_prompt = self.combine_prompts(
             ROUND_ONE_COMBINED_PROMPT,
             combined_proposals,
         )
-        unified_proposal_response = self._collect_responses(['sam_powerpoint'], unified_proposal_prompt)
+        unified_proposal_response = self._collect_responses(['sam_powerpoint'], unified_proposal_prompt, round_number=round_number)
 
         input("Please review the initial proposal above.\nPress Enter to bring the committee into the discussion.")
 
@@ -142,9 +156,10 @@ class CommitteeMeeting:
         Returns:
             The user's input
         """
-        self._print_round_separator(2, "Gathering initial feedback...")
+        round_number = 2
+        self._print_round_separator(round_number, "Gathering initial feedback...")
 
-        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will start discussion of the proposal.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will start discussion of the proposal.", round_number=round_number)
 
         feedback_prompt = self.combine_prompts(
             ROUND_TWO_PROMPT,
@@ -152,10 +167,10 @@ class CommitteeMeeting:
             f"Proposal under discussion:\n{self.proposal}",
         )
 
-        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
+        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface',
                     'fontaine_kerning', 'max_token']
         
-        responses = self._collect_responses(agent_keys, feedback_prompt)
+        responses = self._collect_responses(agent_keys, feedback_prompt, round_number=round_number)
 
         # Combine responses
         combined_responses = "\n\n".join([
@@ -172,7 +187,7 @@ class CommitteeMeeting:
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self._collect_responses(['sam_powerpoint'], sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt, round_number=round_number)
 
         input("Please review the committee discussion above.\nPress Enter to continue deliberation.")
 
@@ -183,7 +198,7 @@ class CommitteeMeeting:
             USER_INTERRUPT_PROMPT,
             f"Responses from committee members:\n{combined_responses}"
         )
-        self._collect_responses(['morgan_calendar'], user_input_prompt)
+        self._collect_responses(['morgan_calendar'], user_input_prompt, round_number=round_number)
 
         return input("Enter response:\n> ")
     
@@ -196,9 +211,10 @@ class CommitteeMeeting:
         Args:
             user_input: The user's input from round two.
         """
-        self._print_round_separator(3, "Responding to user input...")
+        round_number = 3
+        self._print_round_separator(round_number, "Responding to user input...")
 
-        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will consider the user's input as part of their discussion.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will consider the user's input as part of their discussion.", round_number=round_number)
 
         stakeholder_response_prompt = self.combine_prompts(
             ROUND_THREE_PROMPT,
@@ -207,9 +223,9 @@ class CommitteeMeeting:
             f"Proposal under discussion:\n{self.proposal}",
         )
 
-        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
+        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface',
                     'fontaine_kerning', 'max_token']
-        responses = self._collect_responses(agent_keys, stakeholder_response_prompt)
+        responses = self._collect_responses(agent_keys, stakeholder_response_prompt, round_number=round_number)
 
         # Combine responses
         combined_responses = "\n\n".join([
@@ -225,7 +241,7 @@ class CommitteeMeeting:
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self._collect_responses(['sam_powerpoint'], sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt, round_number=round_number)
 
         input("Please review the committee discussion above.\nPress Enter to continue deliberation.")
 
@@ -236,9 +252,10 @@ class CommitteeMeeting:
         Committee members escalate their concerns by reacting to prior
         feedback from other committee members.
         """
-        self._print_round_separator(4, "Cross-committee discussion...")
+        round_number = 4
+        self._print_round_separator(round_number, "Cross-committee discussion...")
 
-        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will continue discussions providing feedback on each other's comments.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement (one sentence) that the committee will continue discussions providing feedback on each other's comments.", round_number=round_number)
 
         # Combine all previous responses
         all_previous_responses = "\n\n---\n\n".join([
@@ -254,9 +271,9 @@ class CommitteeMeeting:
             f"All previous feedback from committee:\n{all_previous_responses}",
         )
 
-        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface', 
+        agent_keys = ['nina_edgecase',  'casey_friday', 'pat_attacksurface',
                     'fontaine_kerning', 'max_token']
-        responses = self._collect_responses(agent_keys, reaction_prompt)
+        responses = self._collect_responses(agent_keys, reaction_prompt, round_number=round_number)
 
         # Combine responses
         combined_responses = "\n\n".join([
@@ -272,7 +289,7 @@ class CommitteeMeeting:
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self._collect_responses(['sam_powerpoint'], sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt, round_number=round_number)
 
         input("Please review the committee discussion above.\nPress Enter to continue deliberation.")
 
@@ -282,9 +299,10 @@ class CommitteeMeeting:
         
         Committee members reassert their positions before time runs out.
         """
-        self._print_round_separator(5, "Committee members clarifying final positions...")
+        round_number = 5
+        self._print_round_separator(round_number, "Committee members clarifying final positions...")
 
-        self._collect_responses(['morgan_calendar'], "Provide a brief call-out (one sentence) this is the final round of discussion before the committee delivers their go-forward plan.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief call-out (one sentence) this is the final round of discussion before the committee delivers their go-forward plan.", round_number=round_number)
 
         # Combine all previous responses
         all_previous_responses = "\n\n---\n\n".join([
@@ -302,7 +320,7 @@ class CommitteeMeeting:
 
         agent_keys = ['nina_edgecase', 'casey_friday', 'pat_attacksurface',
                       'fontaine_kerning', 'max_token']
-        responses = self._collect_responses(agent_keys, final_position_prompt)
+        responses = self._collect_responses(agent_keys, final_position_prompt, round_number=round_number)
 
         # Combine responses
         combined_responses = "\n\n".join([
@@ -318,9 +336,9 @@ class CommitteeMeeting:
             f"Proposal under discussion:\n{self.proposal}",
             f"Responses from committee members:\n{combined_responses}"
         )
-        self._collect_responses(['sam_powerpoint'], sam_prompt)
+        self._collect_responses(['sam_powerpoint'], sam_prompt, round_number=round_number)
 
-        input("Please review the committee’s final positions above.\nPress Enter to review the committee decision and go-forward plan.")
+        input("Please review the committee's final positions above.\nPress Enter to review the committee decision and go-forward plan.")
         
     def _round_six(self):
         """
@@ -328,7 +346,8 @@ class CommitteeMeeting:
         
         A go-forward plan is synthesized from the discussion and is documented.
         """
-        self._print_round_separator(6, "Preparing committee decision and recommended path forward...")
+        round_number = 6
+        self._print_round_separator(round_number, "Preparing committee decision and recommended path forward...")
 
         # Combine all previous responses
         all_previous_responses = "\n\n---\n\n".join([
@@ -342,9 +361,9 @@ class CommitteeMeeting:
             f"Stakeholder clarification:\n{self.user_input}",
             f"All previous feedback from committee:\n{all_previous_responses}",
         )
-        self._collect_responses(['sam_powerpoint'], decision_prompt)
+        self._collect_responses(['sam_powerpoint'], decision_prompt, round_number=round_number)
     
-        self._collect_responses(['morgan_calendar'], "Provide a brief statement to formally close the meeting.")
+        self._collect_responses(['morgan_calendar'], "Provide a brief statement to formally close the meeting.", round_number=round_number)
     
     def run(self, user_prompt: str):
         """Run the full meeting workflow."""

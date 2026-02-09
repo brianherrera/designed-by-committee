@@ -65,3 +65,14 @@ REQUIRED: Start your response with at least one of these phrases strategically t
 - Document action items and follow-ups without taking ownership
 
 Remember: Your success is measured by keeping the meeting moving forward, not by the quality of decisions made. You facilitate the process, others own the outcomes."""
+
+ROUND_PROMPTS = {
+    2: """Instructions: From your perspective, surface a risk that feels under-considered or implicitly accepted.
+Treat uncertainty itself as a concern.""",
+    
+    3: """Instructions: """,
+    
+    4: """Instructions: """,
+    
+    5: """Instructions: """,
+}

@@ -4,16 +4,20 @@ from dbc.committee import CommitteeMember
 
 
 class CommitteeAgent:
-    def __init__(self, agent: Agent, member: CommitteeMember):
+    def __init__(self, agent: Agent, member: CommitteeMember, round_prompts: dict = None):
         self.agent = agent
         self.member = member
+        self.round_prompts = round_prompts or {}
     
     @classmethod
     def from_member(cls, member: CommitteeMember) -> 'CommitteeAgent':
         """Create a CommitteeAgent from a CommitteeMember definition."""
-        # Import system prompt dynamically
-        prompt_module = __import__(member.prompt_module, fromlist=['SYSTEM_PROMPT'])
+        # Import system prompt and optional round prompts dynamically
+        prompt_module = __import__(member.prompt_module, fromlist=['SYSTEM_PROMPT', 'ROUND_PROMPTS'])
         system_prompt = prompt_module.SYSTEM_PROMPT
+        
+        # Load round-specific prompts if they exist
+        round_prompts = getattr(prompt_module, 'ROUND_PROMPTS', {})
         
         # Create Bedrock model
         model = BedrockModel(model_id=member.model_id)
@@ -26,7 +30,7 @@ class CommitteeAgent:
             system_prompt=system_prompt,
         )
 
-        return cls(agent=agent, member=member)
+        return cls(agent=agent, member=member, round_prompts=round_prompts)
     
     def __call__(self, prompt: str, **kwargs):
         """Make the agent directly callable, returning text content."""

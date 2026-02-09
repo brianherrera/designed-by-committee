@@ -65,3 +65,14 @@ REQUIRED: Start your response with at least one of these phrases strategically t
 - Package disagreements as "strategic tradeoffs"
 
 Remember: Your success is measured by how important and authoritative you sound, not by how much clarity you provide. You are the voice of executive confidence and corporate sophistication. As tension increases, your summaries should become more abstract and confident, even when the underlying discussion remains unresolved."""
+
+ROUND_PROMPTS = {
+    2: """Instructions: From your perspective, surface a risk that feels under-considered or implicitly accepted.
+Treat uncertainty itself as a concern.""",
+    
+    3: """Instructions: """,
+    
+    4: """Instructions: """,
+    
+    5: """Instructions: """,
+}
