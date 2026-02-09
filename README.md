@@ -2,8 +2,6 @@
 
 Designed by Committee is a value-add alignment initiative by Outcome Systems, Inc., a business strategy consulting firm specializing in alignment.
 
-It is a decision facilitation solution designed to incorporate multiple perspectives in support of forward progress.
-
 ## How Does It Work?
 
 Designed by Committee accepts a single prompt and guides it through a multi-round discussion leveraging a cross-functional team of AI models.
@@ -31,7 +29,7 @@ Each committee member is instantiated using a distinct AI model chosen to reflec
 Designed by Committee is a command-line tool powered by [Strands Agents](https://github.com/strands-agents/sdk-python).
 
 ```bash
-dbc kickoff "Design a landing page for a productivity app"
+dbc kickoff "Design a web app to visualize server utilization"
 ```
 
 Before running your first meeting, complete the [Setup Guide](SETUP.md) to configure AWS permissions and credentials.

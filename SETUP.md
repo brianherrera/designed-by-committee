@@ -8,11 +8,16 @@ It covers required AWS permissions, local credentials, and installation steps.
 Before you begin, ensure you have the following:
 
 - **Python 3.10 or higher**
-- **An AWS account with access to Amazon Bedrock**
-- **AWS credentials configured with permission to invoke Bedrock models**
+- **An AWS account with credentials configured with permission to invoke Bedrock models**
 
 Designed by Committee relies on Amazon Bedrock for model execution via the
 Strands Agents framework.
+
+**Note:** This project uses Amazon Bedrock models that are available via **on-demand usage** only.
+No provisioned throughput, reservations, or custom model configuration is required.
+
+The specific models used by each committee member are defined in
+[`committee_members.py`](src/dbc/committee/committee_members.py).
 
 ## 1. Configure AWS Permissions
 
@@ -39,8 +44,6 @@ Create an IAM user or role with the following policy attached:
 **Notes:**
 
 * This policy is intentionally minimal and scoped only to model invocation.
-* Model access must also be enabled in the Bedrock console for your account and region.
-* If a model is not enabled, requests will fail even if IAM permissions are correct.
 
 ## 2. Configure AWS Credentials
 
@@ -116,7 +119,7 @@ This installs the `dbc` command-line interface into your active environment.
 Run a simple kickoff command to confirm everything is working:
 
 ```bash
-dbc kickoff "Design a landing page for a productivity app"
+dbc kickoff "Design a web app to visualize server utilization"
 ```
 
 If setup is successful, the committee will begin a multi-round discussion using
@@ -126,8 +129,6 @@ Amazon Bedrock models.
 
 If you encounter issues:
 
-* Verify Bedrock model access is enabled in the AWS console
-* Confirm your AWS region matches a supported Bedrock region
 * Ensure credentials are configured for the default AWS profile
 * Double-check that your virtual environment is active
 
