@@ -4,14 +4,36 @@ from dbc.committee import CommitteeMember
 
 
 class CommitteeAgent:
-    def __init__(self, agent: Agent, member: CommitteeMember, round_prompts: dict = None):
+    def __init__(
+        self,
+        agent: Agent,
+        member: CommitteeMember,
+        round_prompts: dict = None,
+        description: str = None,
+        enable_streaming: bool = False
+    ):
         self.agent = agent
         self.member = member
         self.round_prompts = round_prompts or {}
+        self.description = description
+        self.enable_streaming = enable_streaming
     
     @classmethod
-    def from_member(cls, member: CommitteeMember) -> 'CommitteeAgent':
-        """Create a CommitteeAgent from a CommitteeMember definition."""
+    def from_member(
+        cls,
+        member: CommitteeMember,
+        description: str = None,
+        enable_streaming: bool = False
+    ) -> 'CommitteeAgent':
+        """
+        Create a CommitteeAgent from a CommitteeMember definition.
+        
+        Args:
+            member: CommitteeMember configuration
+            description: Optional description for swarm coordination
+            enable_streaming: If True, enables output streaming (for swarm).
+                            If False, suppresses output (for manual formatting).
+        """
         # Import system prompt and optional round prompts dynamically
         prompt_module = __import__(member.prompt_module, fromlist=['SYSTEM_PROMPT', 'ROUND_PROMPTS'])
         system_prompt = prompt_module.SYSTEM_PROMPT
@@ -22,15 +44,29 @@ class CommitteeAgent:
         # Create Bedrock model
         model = BedrockModel(model_id=member.model_id)
         
-        # Create Strands Agent
-        agent = Agent(
-            callback_handler=None, # Suppress output for formatting control
-            model=model,
-            name=member.display_name,
-            system_prompt=system_prompt,
-        )
+        # Create Strands Agent with conditional callback handler
+        agent_kwargs = {
+            'model': model,
+            'name': member.display_name,
+            'system_prompt': system_prompt,
+        }
+        
+        # Suppress default output. We will handle output formatting
+        agent_kwargs['callback_handler'] = None
+        
+        # Add description if provided (for swarm)
+        if description:
+            agent_kwargs['description'] = description
+        
+        agent = Agent(**agent_kwargs)
 
-        return cls(agent=agent, member=member, round_prompts=round_prompts)
+        return cls(
+            agent=agent,
+            member=member,
+            round_prompts=round_prompts,
+            description=description,
+            enable_streaming=enable_streaming
+        )
     
     def __call__(self, prompt: str, **kwargs):
         """Make the agent directly callable, returning text content."""
