@@ -28,12 +28,14 @@ class CommitteeMember:
 
 
 # Committee member definitions
+# NOTE: Model selection is limited to those supporting tool_config with converse_stream,
+# which is required for the swarm multi-agent pattern implementation.
 COMMITTEE_MEMBERS: Dict[str, CommitteeMember] = {
     'morgan_calendar': CommitteeMember(
         key='morgan_calendar',
         display_name='Morgan Calendar',
         prompt_module='dbc.prompts.committee.morgan_calendar',
-        model_id='global.amazon.nova-2-lite-v1:0',
+        model_id='global.anthropic.claude-haiku-4-5-20251001-v1:0',
         title='Meeting Facilitator'
     ),
     'nina_edgecase': CommitteeMember(
@@ -54,14 +56,14 @@ COMMITTEE_MEMBERS: Dict[str, CommitteeMember] = {
         key='sam_powerpoint',
         display_name='Sam PowerPoint',
         prompt_module='dbc.prompts.committee.sam_powerpoint',
-        model_id='us.meta.llama4-scout-17b-instruct-v1:0',
+        model_id='global.anthropic.claude-sonnet-4-5-20250929-v1:0',
         title='Director of Strategy'
     ),
     'fontaine_kerning': CommitteeMember(
         key='fontaine_kerning',
         display_name='Fontaine Kerning',
         prompt_module='dbc.prompts.committee.fontaine_kerning',
-        model_id='us.mistral.pixtral-large-2502-v1:0',
+        model_id='global.anthropic.claude-sonnet-4-5-20250929-v1:0',
         title='Principal Designer'
     ),
     'pat_attacksurface': CommitteeMember(
@@ -75,7 +77,7 @@ COMMITTEE_MEMBERS: Dict[str, CommitteeMember] = {
         key='max_token',
         display_name='Max Token',
         prompt_module='dbc.prompts.committee.max_token',
-        model_id='us.amazon.nova-premier-v1:0',
+        model_id='global.anthropic.claude-opus-4-5-20251101-v1:0',
         title='AI Platform Lead'
     ),
 }
