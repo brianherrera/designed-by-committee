@@ -1,1 +1,2 @@
 from .committee_meeting import CommitteeMeeting
+from .committee_meeting_swarm import CommitteeMeetingSwarm

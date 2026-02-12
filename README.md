@@ -29,15 +29,15 @@ Each committee member is instantiated using a distinct AI model chosen to reflec
 Designed by Committee is a command-line tool powered by [Strands Agents](https://github.com/strands-agents/sdk-python).
 
 ```bash
-dbc kickoff "Design a web app to visualize server utilization"
+dbc kickoff "Design a web portal"
 ```
 
 Before running your first meeting, complete the [Setup Guide](SETUP.md) to configure AWS permissions and credentials.
 
 ## Notes
 
-* User clarifications may introduce new ambiguity
-* Tensions may increase as discussions progress through each round
+* Engagement patterns are self-directed, with the committee dynamically shaping the discussion in real time
+* Constructive tension may emerge as competing priorities surface
 * There is a hard stop in the final round and the committee must reach alignment on a go-forward plan during this time
 
-Success is not guaranteed.
+The committee optimizes for alignment, not efficiency.

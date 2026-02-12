@@ -2,11 +2,36 @@
 import argparse
 import sys
 from dbc.committee import COMMITTEE_MEMBERS
-from dbc.workflow import CommitteeMeeting
+from dbc.workflow import CommitteeMeeting, CommitteeMeetingSwarm
 
 
 def kickoff(args):
-    """Kickoff a committee meeting."""
+    """Kickoff a swarm-based committee meeting (default workflow)."""
+    # Get user prompt
+    user_prompt = " ".join(args.prompt)
+    if not user_prompt:
+        print("Enter your request for the committee:")
+        user_prompt = input("> ")
+
+    if not user_prompt.strip():
+        print("Error: No prompt provided", file=sys.stderr)
+        sys.exit(1)
+    
+    # Create and run swarm meeting
+    meeting = CommitteeMeetingSwarm.from_members(COMMITTEE_MEMBERS)
+    
+    try:
+        meeting.run(user_prompt, show_thinking=args.show_thinking)
+    except KeyboardInterrupt:
+        print("\nMeeting interrupted due to unscheduled stakeholder input.", file=sys.stderr)
+        sys.exit(130)
+    except Exception as e:
+        print(f"\nMeeting encountered an unresolved blocking issue: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def kickoff_legacy(args):
+    """Kickoff a committee meeting using legacy workflow."""
     # Get user prompt
     user_prompt = " ".join(args.prompt)
     if not user_prompt:
@@ -39,17 +64,34 @@ def main():
     
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     
-    # Kickoff subcommand
+    # Kickoff subcommand (default swarm workflow)
     kickoff_parser = subparsers.add_parser(
         "kickoff",
-        help="Start a new committee meeting"
+        help="Start a new committee meeting (default)"
     )
     kickoff_parser.add_argument(
         "prompt",
         nargs="*",
         help="The request or question for the committee"
     )
+    kickoff_parser.add_argument(
+        "--show-thinking",
+        action="store_true",
+        help="Show <thinking> blocks for debugging meeting setup"
+    )
     kickoff_parser.set_defaults(func=kickoff)
+    
+    # Kickoff-legacy subcommand (original workflow)
+    kickoff_legacy_parser = subparsers.add_parser(
+        "kickoff-legacy",
+        help="Start a new committee meeting using legacy workflow (structured rounds)"
+    )
+    kickoff_legacy_parser.add_argument(
+        "prompt",
+        nargs="*",
+        help="The request or question for the committee"
+    )
+    kickoff_legacy_parser.set_defaults(func=kickoff_legacy)
     
     args = parser.parse_args()
     
