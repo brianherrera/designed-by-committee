@@ -49,7 +49,7 @@ COMMITTEE_MEMBERS: Dict[str, CommitteeMember] = {
         key='casey_friday',
         display_name='Casey Friday',
         prompt_module='dbc.prompts.committee.casey_friday',
-        model_id='us.amazon.nova-pro-v1:0',
+        model_id='global.anthropic.claude-haiku-4-5-20251001-v1:0',
         title='Product Manager'
     ),
     'sam_powerpoint': CommitteeMember(
