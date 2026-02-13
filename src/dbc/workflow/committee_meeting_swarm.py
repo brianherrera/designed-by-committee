@@ -260,22 +260,36 @@ Current Phase: {phase_config['name']}
 Objective: {phase_config['objective']}
 Tension Level: {phase_config['tension_level']}
 
-As the first speaker, you should either:
-1. Create an initial proposal yourself, OR
-2. Hand off to specialists (Nina, Casey, or Fontaine) to gather proposals, then synthesize them
+Your role in this phase is to FACILITATE proposal generation, not create it yourself.
+
+REQUIRED ACTIONS:
+1. Briefly acknowledge the request (1-2 sentences)
+2. Hand off to specialists to gather their proposals:
+   - Nina Edgecase for technical architecture and implementation approach
+   - Casey Friday for product/MVP scope and timeline
+   - Fontaine Kerning for design/UX perspective
+3. After gathering specialist input, synthesize their proposals into a unified initial proposal
+
+DO NOT create the proposal yourself. Your role is to coordinate specialists and synthesize their input.
 
 Remember: You're in a committee meeting. Other members will review and debate this proposal.
 
-IMPORTANT - Clarification Questions:
-You have access to the request_user_clarification tool. Each committee member
-in this phase gets ONE question to ask the user. Use strategically:
+CRITICAL - Clarification Questions:
+You have access to the request_user_clarification tool. DO NOT make assumptions
+when information is unclear or ambiguous - ASK THE USER instead.
 
-- Only ask if critical information is truly missing or ambiguous
-- Make your question clear, specific, and focused
-- Consider whether the information is essential for your proposal
-- Once you've asked your question, you cannot ask another
+Guidelines for using clarification questions:
+- If ANY aspect of the request is unclear, vague, or could be interpreted multiple ways - ASK
+- If you're unsure about scope, scale, constraints, or success criteria - ASK
+- If you find yourself making assumptions about what the user wants - STOP and ASK
+- If multiple valid approaches exist and you need direction - ASK
+- Make your questions clear, specific, and focused on eliminating ambiguity
 
-If you don't need clarification, proceed with available information."""
+Each committee member has a limited number of questions, so prioritize the most
+important clarifications. However, it's better to ask and be certain than to
+assume and build the wrong thing.
+
+Remember: Assumptions lead to rework. Questions lead to clarity."""
         
         elif phase_number == 2:
             # Phase 2: Initial Review
@@ -291,6 +305,9 @@ Proposal under discussion:
 {clarification_context}
 
 As the facilitator, guide the committee through initial feedback. Hand off to committee members to gather their perspectives.
+
+CLARIFICATION QUESTIONS:
+If you need additional information from the user to provide meaningful feedback, use the request_user_clarification tool. You have a limited number of questions available.
 
 IMPORTANT: Keep responses brief - around one paragraph per committee member. Focus on key concerns and feedback."""
         
@@ -316,6 +333,9 @@ REQUIRED ACTIONS:
 1. Hand off to at least 3 committee members (Nina, Casey, Pat, Fontaine, or Max)
 2. Each member should react to specific points from colleagues
 3. Only after gathering multiple perspectives should you consider the phase complete
+
+CLARIFICATION QUESTIONS:
+If you need additional information from the user to support your arguments or address concerns, use the request_user_clarification tool. You have a limited number of questions available.
 
 IMPORTANT: Keep responses brief - around one paragraph per committee member. React to specific points from colleagues."""
         
@@ -347,6 +367,9 @@ YOU MUST COMPLETE THESE HANDOFFS:
 
 DO NOT skip any committee member. DO NOT provide your own commentary. Your role is ONLY to facilitate handoffs.
 
+CLARIFICATION QUESTIONS:
+If you need critical information from the user to finalize your position, use the request_user_clarification tool. You have a limited number of questions available.
+
 IMPORTANT: Keep responses brief - around one paragraph per committee member. State your final position clearly and concisely."""
         
         elif phase_number == 5:
@@ -372,6 +395,9 @@ As Sam Powerpoint, your role is to:
 4. If you need facilitation support, hand off to Morgan Calendar
 5. Create a comprehensive recommendation that addresses the stakeholder's needs
 
+CLARIFICATION QUESTIONS:
+If you need final clarification from the user to complete the recommendation, use the request_user_clarification tool. You have a limited number of questions available.
+
 If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis and final recommendation."""
         
         return "Continue the committee discussion."
@@ -383,11 +409,15 @@ If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis a
         print(f"Phase {phase_number}: {phase_config['name']}")
         print("=" * 80 + "\n")
     
-    def _add_clarification_tools_to_phase1_agents(self):
-        """Add clarification tools to Phase 1 agents."""
-        phase_1_agents = ['sam_powerpoint', 'nina_edgecase', 'casey_friday', 'fontaine_kerning']
+    def _add_clarification_tools_to_agents(self):
+        """Add clarification tools to all agents except the facilitator (Morgan Calendar).
         
-        for agent_key in phase_1_agents:
+        Tools are registered once and persist across all phases, allowing agents to
+        request clarifications throughout the entire meeting.
+        """
+        agents_with_clarification = ['sam_powerpoint', 'nina_edgecase', 'casey_friday', 'fontaine_kerning', 'pat_attacksurface', 'max_token']
+        
+        for agent_key in agents_with_clarification:
             if agent_key in self.agents:
                 agent = self.agents[agent_key]
                 
@@ -414,9 +444,9 @@ If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis a
         # Print phase separator
         self._print_phase_separator(phase_number)
         
-        # Add user input tool for Phase 1 only (done once before first phase)
+        # Add clarification tools once before first phase (tools persist across all phases)
         if phase_number == 1 and self.state['max_questions_per_agent'] > 0:
-            self._add_clarification_tools_to_phase1_agents()
+            self._add_clarification_tools_to_agents()
         
         # Update swarm configuration for this phase
         entry_point_key = phase_config.get('entry_point', 'sam_powerpoint')
@@ -478,6 +508,12 @@ If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis a
         
         return final_result
     
-    def run(self, user_prompt: str, show_thinking: bool = False, questions_per_agent: int = 1):
-        """Run the swarm-based committee meeting (synchronous wrapper)."""
+    def run(self, user_prompt: str, show_thinking: bool = False, questions_per_agent: int = 2):
+        """Run the swarm-based committee meeting (synchronous wrapper).
+        
+        Args:
+            user_prompt: The user's request to the committee
+            show_thinking: Whether to display agent thinking blocks
+            questions_per_agent: Number of clarification questions each agent can ask (default: 2)
+        """
         return asyncio.run(self.run_async(user_prompt, show_thinking=show_thinking, questions_per_agent=questions_per_agent))

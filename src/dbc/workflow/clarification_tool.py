@@ -22,9 +22,18 @@ def create_clarification_tool(agent_key: str, agent_name: str, state: dict, max_
     """
     @tool
     def request_user_clarification(question: str) -> str:
-        """Request clarification from the user when critical information is missing or ambiguous.
+        """Request clarification from the user when information is missing, unclear, or ambiguous.
         
-        You have ONE question available - use it wisely for the most important clarification.
+        IMPORTANT: If you're unsure about ANY aspect of the request, ASK rather than assume.
+        You have limited questions available - use them to eliminate ambiguity and ensure you
+        understand the user's actual needs before making assumptions.
+        
+        When to ask:
+        - Requirements are vague or could be interpreted multiple ways
+        - Technical details are missing (scale, performance needs, constraints)
+        - User intent is unclear (what problem are they really trying to solve?)
+        - Multiple valid approaches exist and you need direction
+        - Success criteria are not defined
         
         Args:
             question: The clarification question to ask the user

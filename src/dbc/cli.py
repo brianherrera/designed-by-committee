@@ -21,7 +21,11 @@ def kickoff(args):
     meeting = CommitteeMeetingSwarm.from_members(COMMITTEE_MEMBERS)
     
     try:
-        meeting.run(user_prompt, show_thinking=args.show_thinking)
+        meeting.run(
+            user_prompt,
+            show_thinking=args.show_thinking,
+            questions_per_agent=args.questions_per_agent
+        )
     except KeyboardInterrupt:
         print("\nMeeting interrupted due to unscheduled stakeholder input.", file=sys.stderr)
         sys.exit(130)
@@ -78,6 +82,12 @@ def main():
         "--show-thinking",
         action="store_true",
         help="Show <thinking> blocks for debugging meeting setup"
+    )
+    kickoff_parser.add_argument(
+        "--questions-per-agent",
+        type=int,
+        default=2,
+        help="Number of clarification questions each agent can ask during Phase 1 (default: 2)"
     )
     kickoff_parser.set_defaults(func=kickoff)
     
