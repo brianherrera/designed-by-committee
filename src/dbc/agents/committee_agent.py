@@ -1,6 +1,9 @@
+import time
 from strands import Agent
 from strands.models.bedrock import BedrockModel
 from dbc.committee import CommitteeMember
+
+from botocore.exceptions import ClientError
 
 
 class CommitteeAgent:
@@ -68,12 +71,63 @@ class CommitteeAgent:
             enable_streaming=enable_streaming
         )
     
+    def _invoke_with_retry(self, prompt: str, **kwargs):
+        """
+        Invoke agent with automatic retry for AWS Bedrock subscription activation.
+        
+        AWS Bedrock on-demand models require an automatic subscription that takes
+        ~2 minutes to activate on first invocation. AWS deprecated the console page
+        where this could be done manually, so the subscription is now created
+        automatically on first API call. This method handles the initial
+        AccessDeniedException with exponential backoff retry logic.
+        
+        Args:
+            prompt: The prompt to send to the agent
+            **kwargs: Additional arguments to pass to the agent
+            
+        Returns:
+            Agent response
+            
+        Raises:
+            Exception: If all retries are exhausted or a non-retryable error occurs
+        """
+        retry_delays = [5, 30, 60]
+        max_attempts = len(retry_delays) + 1
+
+        last_error = None
+        
+        for attempt in range(max_attempts):
+            try:
+                return self.agent(prompt, **kwargs)
+            except ClientError as e:
+                last_error = e
+
+                # Check if this is the last attempt
+                if attempt == max_attempts - 1:
+                    break
+
+                error_code = e.response['Error']['Code']
+                delay = retry_delays[attempt]
+
+                if (error_code == 'AccessDeniedException' and 'aws-marketplace' in str(e)):
+                    print(f"Model subscription activating for {self.member.display_name} (first-time setup)...")
+                elif (error_code == 'ThrottlingException'):
+                    print(f"Encountered throttling exception for {self.member.display_name}")
+                else:
+                    print(f"Error encountered when trying to invoke models: {error_code}")
+                    raise
+
+                print(f"Retrying in {delay} seconds... (attempt {attempt + 1}/{max_attempts})")
+                time.sleep(delay)
+
+        print(f"Retries exhausted for {self.member.display_name}.")
+        raise last_error
+    
     def __call__(self, prompt: str, **kwargs):
         """Make the agent directly callable, returning text content."""
-        response = self.agent(prompt, **kwargs)
+        response = self._invoke_with_retry(prompt, **kwargs)
         # Extract text content from response
         if hasattr(response, 'message') and isinstance(response.message, dict):
             if 'content' in response.message and len(response.message['content']) > 0:
                 return response.message['content'][0]['text']
         return response
-
