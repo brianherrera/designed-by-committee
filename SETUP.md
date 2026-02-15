@@ -32,6 +32,8 @@ Create an IAM user or role with the following policy attached:
         {
             "Effect": "Allow",
             "Action": [
+                "aws-marketplace:Subscribe",
+                "aws-marketplace:ViewSubscriptions",
                 "bedrock:InvokeModel",
                 "bedrock:InvokeModelWithResponseStream"
             ],
@@ -43,7 +45,9 @@ Create an IAM user or role with the following policy attached:
 
 **Notes:**
 
-* This policy is intentionally minimal and scoped only to model invocation.
+* This policy is intentionally minimal and scoped to model invocation and automated subscription activation.
+* The subscription activation for on-demand models happens automatically on the first API call. 
+* This process replaces the deprecated model access page and activation via AWS Marketplace. See: [Simplified model access in Amazon Bedrock](https://aws.amazon.com/blogs/security/simplified-amazon-bedrock-model-access/)
 
 ## 2. Configure AWS Credentials
 
@@ -121,6 +125,8 @@ Run a simple kickoff command to confirm everything is working:
 ```bash
 dbc kickoff "Design a web app to visualize server utilization"
 ```
+
+Note: The first meeting may take 2-3 minutes longer than usual while AWS activates the subscription to Bedrock on-demand models. Subsequent meetings will run at normal speed.
 
 If setup is successful, the committee will begin a multi-round discussion using
 Amazon Bedrock models.
