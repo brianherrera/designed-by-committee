@@ -55,10 +55,10 @@ PHASE_CONFIG = {
                                   'pat_attacksurface', 'fontaine_kerning', 'max_token', 'sam_powerpoint']
     },
     4: {
-        'name': 'Final Positions',
-        'objective': 'State final position before decision',
+        'name': 'Finalize plan',
+        'objective': 'Finalize plan before decision',
         'tension_level': 'High',
-        'max_handoffs': 5,
+        'max_handoffs': 10,
         'entry_point': 'morgan_calendar',
         'expected_participants': ['morgan_calendar', 'nina_edgecase', 'casey_friday', 
                                   'pat_attacksurface', 'fontaine_kerning', 'max_token']
@@ -67,7 +67,7 @@ PHASE_CONFIG = {
         'name': 'Decision & Go-Forward Plan',
         'objective': 'Create consensus-driven recommendation',
         'tension_level': 'High → Resolution',
-        'max_handoffs': 15,
+        'max_handoffs': 5,
         'entry_point': 'sam_powerpoint',
         'expected_participants': ['sam_powerpoint', 'morgan_calendar']
     }
@@ -80,6 +80,6 @@ SWARM_CONFIG = {
     'max_iterations': 50,
     'execution_timeout': 1800.0,  # 30 minutes total execution time
     'node_timeout': 600,  # 10 minutes per agent (allows time for user input)
-    'repetitive_handoff_detection_window': 8,
+    'repetitive_handoff_detection_window': 5,
     'repetitive_handoff_min_unique_agents': 3,
 }

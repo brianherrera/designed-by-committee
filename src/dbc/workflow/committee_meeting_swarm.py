@@ -21,7 +21,7 @@ from dbc.workflow.swarm_config import AGENT_DESCRIPTIONS, PHASE_CONFIG, SWARM_CO
 class CommitteeStreamHandler:
     """Custom handler for committee meeting swarm events."""
     
-    def __init__(self, agents_dict: Dict[str, CommitteeAgent], is_final_phase: bool = False, show_thinking: bool = False):
+    def __init__(self, agents_dict: Dict[str, CommitteeAgent], show_thinking: bool = False):
         self.agents_dict = agents_dict
         # Create a reverse mapping from agent name to key
         self.name_to_key = {
@@ -31,7 +31,6 @@ class CommitteeStreamHandler:
         self.current_speaker = None
         self.buffer = []
         self.result = None
-        self.is_final_phase = is_final_phase
         self.show_thinking = show_thinking
         self.in_thinking_block = False
         self.partial_tag_buffer = ""  # Buffer for partial tags at chunk boundaries
@@ -73,8 +72,6 @@ class CommitteeStreamHandler:
             # Swarm completed
             self.result = event.get('result')
             # Only print meeting end message if this is the final phase
-            if self.is_final_phase:
-                self._print_meeting_end()
     
     def _print_speaker_header(self, node_id: str):
         """Print formatted header for new speaker."""
@@ -157,10 +154,6 @@ class CommitteeStreamHandler:
             i += 1
         
         return ''.join(result)
-    
-    def _print_meeting_end(self):
-        """Print meeting end notification."""
-        print("\n\n[**Meeting has ended.**]")
 
 
 class CommitteeMeetingSwarm:
@@ -252,15 +245,30 @@ class CommitteeMeetingSwarm:
         
         if phase_number == 1:
             # Phase 1: Proposal Generation
-            return f"""You are starting a committee meeting to address the following request:
+            return f"""COMMITTEE MEETING - Phase 1: {phase_config['name']}
 
+REQUEST:
 {self.state['user_prompt']}
 
-Current Phase: {phase_config['name']}
-Objective: {phase_config['objective']}
-Tension Level: {phase_config['tension_level']}
+PHASE CONTEXT:
+- Objective: {phase_config['objective']}
+- Tension Level: {phase_config['tension_level']}
 
-Your role in this phase is to FACILITATE proposal generation, not create it yourself.
+--- ROLE-SPECIFIC INSTRUCTIONS ---
+
+IF YOU ARE SAM POWERPOINT (FACILITATOR):
+- Your role is to FACILITATE proposal generation, not create it yourself.
+
+DO NOT create the proposal yourself. Your role is to coordinate specialists and synthesize their input.
+
+IF YOU ARE A SPECIALIST (Nina Edgecase, Casey Friday, or Fontaine Kerning):
+- Provide your domain expertise on the request above. Focus on your area of specialization.
+- Hand off to specialists to gather their proposals
+- Keep your input focused and concise. You're contributing to a proposal that will be reviewed by the full committee.
+
+--- SHARED GUIDELINES ---
+
+Remember: You're in a committee meeting. Other members will review and debate this proposal.
 
 REQUIRED ACTIONS:
 1. Briefly acknowledge the request (1-2 sentences)
@@ -269,10 +277,6 @@ REQUIRED ACTIONS:
    - Casey Friday for product/MVP scope and timeline
    - Fontaine Kerning for design/UX perspective
 3. After gathering specialist input, synthesize their proposals into a unified initial proposal
-
-DO NOT create the proposal yourself. Your role is to coordinate specialists and synthesize their input.
-
-Remember: You're in a committee meeting. Other members will review and debate this proposal.
 
 CRITICAL - Clarification Questions:
 You have access to the request_user_clarification tool. DO NOT make assumptions
@@ -294,17 +298,29 @@ Remember: Assumptions lead to rework. Questions lead to clarity."""
         elif phase_number == 2:
             # Phase 2: Initial Review
             clarification_context = self._build_clarification_context()
-            return f"""The committee will now provide initial feedback on the proposal.
+            return f"""COMMITTEE MEETING - Phase 2: {phase_config['name']}
 
-Current Phase: {phase_config['name']}
-Objective: {phase_config['objective']}
-Tension Level: {phase_config['tension_level']}
+PHASE CONTEXT:
+- Objective: {phase_config['objective']}
+- Tension Level: {phase_config['tension_level']}
 
-Proposal under discussion:
+PROPOSAL UNDER DISCUSSION:
 {self.state.get('proposal', 'No proposal recorded yet')}
 {clarification_context}
 
-As the facilitator, guide the committee through initial feedback. Hand off to committee members to gather their perspectives.
+--- ROLE-SPECIFIC INSTRUCTIONS ---
+
+IF YOU ARE THE FACILITATOR (Sam Powerpoint or Morgan Calendar):
+Guide the committee through initial feedback. Hand off to committee members to gather their perspectives.
+
+DO NOT provide feedback yourself. Your role is to coordinate discussion and synthesize input from the committee.
+
+IF YOU ARE A COMMITTEE MEMBER (Nina, Casey, Pat, Fontaine, or Max):
+- Provide your initial feedback on the proposal above.
+- Hand off to specialists to gather their proposals
+- Keep your response brief - around one paragraph. Focus on key concerns and feedback.
+
+--- SHARED GUIDELINES ---
 
 CLARIFICATION QUESTIONS:
 If you need additional information from the user to provide meaningful feedback, use the request_user_clarification tool. You have a limited number of questions available.
@@ -314,48 +330,81 @@ IMPORTANT: Keep responses brief - around one paragraph per committee member. Foc
         elif phase_number == 3:
             # Phase 3: Cross-Committee Deliberation
             clarification_context = self._build_clarification_context()
-            return f"""The committee will now engage in cross-committee discussion.
+            return f"""COMMITTEE MEETING - Phase 3: {phase_config['name']}
 
-Current Phase: {phase_config['name']}
-Objective: {phase_config['objective']}
-Tension Level: {phase_config['tension_level']}
+PHASE CONTEXT:
+- Objective: {phase_config['objective']}
+- Tension Level: {phase_config['tension_level']}
 
-Proposal under discussion:
+PROPOSAL UNDER DISCUSSION:
 {self.state.get('proposal', 'No proposal recorded yet')}
 
-Stakeholder clarification:
+STAKEHOLDER CLARIFICATION:
 {self.state.get('user_input', 'No user input provided')}
 {clarification_context}
 
-As the facilitator, you MUST hand off to committee members to start the discussion. DO NOT provide your own analysis or close the phase.
+--- ROLE-SPECIFIC INSTRUCTIONS ---
+
+IF YOU ARE THE FACILITATOR (Morgan Calendar or Sam Powerpoint):
+- You MUST hand off to committee members to start the discussion.
+- DO NOT provide your own analysis or close the phase.
+
+IF YOU ARE A COMMITTEE MEMBER (Nina, Casey, Pat, Fontaine, or Max):
+Engage in cross-committee discussion. React to specific points from your colleagues:
+- Build on or challenge ideas from other members
+- Raise concerns about approaches suggested by others
+- Propose alternatives or refinements
+- Identify tensions between different perspectives (technical vs. timeline, security vs. UX, etc.)
+- Keep your response brief - around one paragraph. React to specific points from colleagues, not just general commentary.
+
+--- SHARED GUIDELINES ---
 
 REQUIRED ACTIONS:
 1. Hand off to at least 3 committee members (Nina, Casey, Pat, Fontaine, or Max)
-2. Each member should react to specific points from colleagues
-3. Only after gathering multiple perspectives should you consider the phase complete
+2. Ensure each member has a chance to react to specific points from colleagues
+3. Hand off to Sam to generate a summary of the discussion
+4. Only after gathering multiple perspectives should you consider the phase complete
 
 CLARIFICATION QUESTIONS:
-If you need additional information from the user to support your arguments or address concerns, use the request_user_clarification tool. You have a limited number of questions available.
-
-IMPORTANT: Keep responses brief - around one paragraph per committee member. React to specific points from colleagues."""
+If you need additional information from the user to support your arguments or address concerns, use the request_user_clarification tool. You have a limited number of questions available."""
         
         elif phase_number == 4:
             # Phase 4: Final Positions
             clarification_context = self._build_clarification_context()
-            return f"""This is the final round of discussion before the committee delivers their go-forward plan.
+            return f"""COMMITTEE MEETING - Phase 4: {phase_config['name']}
 
-Current Phase: {phase_config['name']}
-Objective: {phase_config['objective']}
-Tension Level: {phase_config['tension_level']}
+PHASE CONTEXT:
+- Objective: {phase_config['objective']}
+- Tension Level: {phase_config['tension_level']}
 
-Proposal under discussion:
+This is the final round of discussion before the committee delivers their go-forward plan.
+
+PROPOSAL UNDER DISCUSSION:
 {self.state.get('proposal', 'No proposal recorded yet')}
 
-Stakeholder clarification:
+STAKEHOLDER CLARIFICATION:
 {self.state.get('user_input', 'No user input provided')}
 {clarification_context}
 
-As the facilitator, DO NOT provide your own summary or analysis. Your ONLY role is to hand off to each committee member.
+--- ROLE-SPECIFIC INSTRUCTIONS ---
+
+IF YOU ARE THE FACILITATOR (Morgan Calendar):
+DO NOT provide your own summary or analysis. Your ONLY role is to hand off to each committee member.
+
+DO NOT skip any committee member. DO NOT provide your own commentary. Your role is ONLY to facilitate handoffs.
+
+IF YOU ARE A COMMITTEE MEMBER (Nina, Casey, Pat, Fontaine, or Max):
+State your final position on the proposal. This is your last chance to influence the decision:
+- Clearly state whether you support, oppose, or conditionally support the proposal
+- Highlight your most critical concerns or requirements
+- Specify any non-negotiable constraints from your domain
+- Be concise but definitive
+- Keep your response brief - around one paragraph. State your final position clearly and concisely.
+
+IF YOU ARE SAM POWERPOINT:
+After all committee members have stated their positions, acknowledge that you've heard all perspectives and prepare to move to the final decision phase. DO NOT make the decision yet - that happens in Phase 5.
+
+--- SHARED GUIDELINES ---
 
 YOU MUST COMPLETE THESE HANDOFFS:
 1. Hand off to Nina Edgecase for technical concerns and architectural position
@@ -365,40 +414,52 @@ YOU MUST COMPLETE THESE HANDOFFS:
 5. Hand off to Max Token for AI/automation considerations
 6. After ALL five positions are heard, hand off to Sam Powerpoint to prepare for the final decision phase
 
-DO NOT skip any committee member. DO NOT provide your own commentary. Your role is ONLY to facilitate handoffs.
-
 CLARIFICATION QUESTIONS:
-If you need critical information from the user to finalize your position, use the request_user_clarification tool. You have a limited number of questions available.
-
-IMPORTANT: Keep responses brief - around one paragraph per committee member. State your final position clearly and concisely."""
+If you need critical information from the user to finalize your position, use the request_user_clarification tool. You have a limited number of questions available."""
         
         elif phase_number == 5:
             # Phase 5: Decision
             clarification_context = self._build_clarification_context()
-            return f"""The committee must now create a consensus-driven recommendation and go-forward plan.
+            return f"""COMMITTEE MEETING - Phase 5: {phase_config['name']}
 
-Current Phase: {phase_config['name']}
-Objective: {phase_config['objective']}
-Tension Level: {phase_config['tension_level']}
+PHASE CONTEXT:
+- Objective: {phase_config['objective']}
+- Tension Level: {phase_config['tension_level']}
 
-Original Proposal:
+The committee must now create a consensus-driven recommendation and go-forward plan.
+
+ORIGINAL PROPOSAL:
 {self.state.get('proposal', 'No proposal recorded yet')}
 
-Stakeholder clarification:
+STAKEHOLDER CLARIFICATION:
 {self.state.get('user_input', 'No user input provided')}
 {clarification_context}
 
-As Sam Powerpoint, your role is to:
-1. Restate the final unified proposal with all committee feedback integrated
+--- ROLE-SPECIFIC INSTRUCTIONS ---
+
+IF YOU ARE SAM POWERPOINT:
+Your role is to create the final synthesis and recommendation:
+1. Generate the final unified proposal with all committee feedback integrated
 2. Review the key tensions, agreements, and positions from the discussion
 3. Synthesize these into a clear, actionable go-forward plan
 4. If you need facilitation support, hand off to Morgan Calendar
 5. Create a comprehensive recommendation that addresses the stakeholder's needs
 
+Structure your recommendation clearly with:
+- Executive summary of the decision
+- Key changes from the original proposal
+- How major concerns were addressed
+- Clear next steps and deliverables
+
+IF YOU ARE MORGAN CALENDAR:
+Hand off to Sam Powerpoint to create the synthesis and final recommendation. Your facilitation role is complete.
+
+--- SHARED GUIDELINES ---
+
 CLARIFICATION QUESTIONS:
 If you need final clarification from the user to complete the recommendation, use the request_user_clarification tool. You have a limited number of questions available.
 
-If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis and final recommendation."""
+IMPORTANT: This is the final deliverable - make it comprehensive, clear, and actionable."""
         
         return "Continue the committee discussion."
     
@@ -457,8 +518,7 @@ If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis a
         phase_prompt = self._build_phase_prompt(phase_number)
         
         # Stream the swarm execution (mark if this is the final phase)
-        is_final_phase = (phase_number == 6)
-        handler = CommitteeStreamHandler(self.agents, is_final_phase=is_final_phase, show_thinking=show_thinking)
+        handler = CommitteeStreamHandler(self.agents, show_thinking=show_thinking)
         
         async for event in self.swarm.stream_async(
             phase_prompt,
@@ -505,6 +565,8 @@ If you are Morgan Calendar, hand off to Sam Powerpoint to create the synthesis a
         
         # Phase 5: Decision
         final_result = await self._run_phase_swarm(5, show_thinking=show_thinking)
+
+        print("\n\n[**Meeting has ended.**]")
         
         return final_result
     

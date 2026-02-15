@@ -86,7 +86,7 @@ def main():
     kickoff_parser.add_argument(
         "--questions-per-agent",
         type=int,
-        default=2,
+        default=1,
         help="Number of clarification questions each agent can ask during Phase 1 (default: 2)"
     )
     kickoff_parser.set_defaults(func=kickoff)
