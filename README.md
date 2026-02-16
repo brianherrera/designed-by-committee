@@ -2,11 +2,11 @@
 
 Designed by Committee is a value-add alignment initiative by Outcome Systems, Inc., a business strategy consulting firm specializing in alignment.
 
+This process delivers measurable improvements in organizational cohesion by formalizing the collaborative decision-making process.
+
 ## How Does It Work?
 
 Designed by Committee accepts a single prompt and guides it through a multi-round discussion leveraging a cross-functional team of AI models.
-
-By routing ideas through a structured alignment workflow, it ensures proposals are reviewed, debated, and refined.
 
 The final round produces a consensus-driven recommendation, along with the decision framework and stakeholder feedback that drove alignment.
 
@@ -36,8 +36,8 @@ Before running your first meeting, complete the [Setup Guide](SETUP.md) to confi
 
 ## Notes
 
-* Engagement patterns are self-directed, with the committee dynamically shaping the discussion in real time
-* Constructive tension may emerge as competing priorities surface
-* There is a hard stop in the final round and the committee must reach alignment on a go-forward plan during this time
+* Discussion flow is self-directed, with members dynamically shaping the discussion in real time
+* There is a hard stop in the final round and the committee must deliver a go-forward plan
+* Token usage may exceed the practical value of the outcome
 
 The committee optimizes for alignment, not efficiency.
