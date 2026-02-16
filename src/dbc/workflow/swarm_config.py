@@ -33,8 +33,8 @@ PHASE_CONFIG = {
         'tension_level': 'Low',
         'max_handoffs': 10,
         'entry_point': 'sam_powerpoint',
-        'expected_participants': ['sam_powerpoint', 'nina_edgecase', 'casey_friday', 'fontaine_kerning'],
-        'required_handoffs': ['nina_edgecase', 'casey_friday', 'fontaine_kerning']
+        'expected_participants': ['sam_powerpoint', 'nina_edgecase', 'casey_friday', 'fontaine_kerning', 'max_token'],
+        'required_handoffs': ['nina_edgecase', 'casey_friday', 'fontaine_kerning', 'max_token']
     },
     2: {
         'name': 'Initial Review',

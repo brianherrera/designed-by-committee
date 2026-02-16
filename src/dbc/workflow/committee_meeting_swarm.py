@@ -261,7 +261,7 @@ IF YOU ARE SAM POWERPOINT (FACILITATOR):
 
 DO NOT create the proposal yourself. Your role is to coordinate specialists and synthesize their input.
 
-IF YOU ARE A SPECIALIST (Nina Edgecase, Casey Friday, or Fontaine Kerning):
+IF YOU ARE A SPECIALIST (Nina Edgecase, Casey Friday, Fontaine Kerning, or Max Token):
 - Provide your domain expertise on the request above. Focus on your area of specialization.
 - Hand off to specialists to gather their proposals
 - Keep your input focused and concise. You're contributing to a proposal that will be reviewed by the full committee.
@@ -276,6 +276,7 @@ REQUIRED ACTIONS:
    - Nina Edgecase for technical architecture and implementation approach
    - Casey Friday for product/MVP scope and timeline
    - Fontaine Kerning for design/UX perspective
+   - Max Token for AI/automation opportunities and considerations
 3. After gathering specialist input, synthesize their proposals into a unified initial proposal
 
 CRITICAL - Clarification Questions:
