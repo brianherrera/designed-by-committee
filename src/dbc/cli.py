@@ -2,7 +2,7 @@
 import argparse
 import sys
 from dbc.committee import COMMITTEE_MEMBERS
-from dbc.workflow import CommitteeMeeting, CommitteeMeetingSwarm
+from dbc.workflow import CommitteeMeetingSwarm
 
 
 def kickoff(args):
@@ -31,31 +31,6 @@ def kickoff(args):
         sys.exit(130)
     except Exception as e:
         print(f"\nMeeting encountered an unresolved blocking issue: {e}", file=sys.stderr)
-        sys.exit(1)
-
-
-def kickoff_legacy(args):
-    """Kickoff a committee meeting using legacy workflow."""
-    # Get user prompt
-    user_prompt = " ".join(args.prompt)
-    if not user_prompt:
-        print("Enter your request for the committee:")
-        user_prompt = input("> ")
-
-    if not user_prompt.strip():
-        print("Error: No prompt provided", file=sys.stderr)
-        sys.exit(1)
-    
-    # Create and run meeting
-    meeting = CommitteeMeeting.from_members(COMMITTEE_MEMBERS)
-    
-    try:
-        meeting.run(user_prompt)
-    except KeyboardInterrupt:
-        print("Meeting interrupted due to unscheduled stakeholder input.", file=sys.stderr)
-        sys.exit(130)
-    except Exception as e:
-        print(f"Meeting encountered an unresolved blocking issue:{e}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -90,18 +65,6 @@ def main():
         help="Number of clarification questions each agent can ask during Phase 1 (default: 2)"
     )
     kickoff_parser.set_defaults(func=kickoff)
-    
-    # Kickoff-legacy subcommand (original workflow)
-    kickoff_legacy_parser = subparsers.add_parser(
-        "kickoff-legacy",
-        help="Start a new committee meeting using legacy workflow (structured rounds)"
-    )
-    kickoff_legacy_parser.add_argument(
-        "prompt",
-        nargs="*",
-        help="The request or question for the committee"
-    )
-    kickoff_legacy_parser.set_defaults(func=kickoff_legacy)
     
     args = parser.parse_args()
     

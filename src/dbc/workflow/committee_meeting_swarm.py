@@ -3,7 +3,7 @@ Swarm-based committee meeting orchestration.
 
 This module implements an autonomous, agent-driven committee meeting workflow
 using the Strands multi-agent swarm pattern. Unlike the static workflow in
-the prototype (committee_meeting.py), this allows agents to self-organize and hand off to
+the prototype, this allows agents to self-organize and hand off to
 each other dynamically.
 """
 
