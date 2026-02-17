@@ -34,6 +34,34 @@ dbc kickoff "Design a web portal"
 
 Before running your first meeting, complete the [Setup Guide](SETUP.md) to configure AWS permissions and credentials.
 
+## Sample Committee Dialogue
+
+```text
+MORGAN CALENDAR (Meeting Facilitator):
+Let's stay on time. I'm going to pull in specific stakeholders to react to key elements of this proposal.
+
+NINA EDGECASE (Principal Engineer):
+I'm concerned about several assumptions here. Are we solving a real problem or an imagined one?
+
+FONTAINE KERNING (Principal Designer):
+The spacing feels cramped. If we don't fix the visual hierarchy, adoption will suffer.
+
+MAX TOKEN (AI Platform Lead):
+This is a solved problem with LLMs — and I'm not seeing nearly enough AI integration in this proposal.
+
+CASEY FRIDAY (Product Manager):
+Perfect is the enemy of good. Ship search in 8–10 weeks. AI can come later.
+
+PAT ATTACKSURFACE (Security Architect):
+Have we threat modeled this? Casey wants keyword search first, but Max is pushing AI-first architecture.
+
+SAM POWERPOINT (Director of Strategy):
+What I'm hearing is a strategic opportunity to build the runway while flying the plane.
+```
+
+See the full transcript:
+[Dev Portal Example](examples/dev-portal-full-transcript.txt)
+
 ## Notes
 
 * Discussion flow is self-directed, with members dynamically shaping the discussion in real time
